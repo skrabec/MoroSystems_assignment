@@ -18,6 +18,7 @@
         <compiler.version>3.8.1</compiler.version>
         <allure.version>2.33.0</allure.version>
         <lombok.version>1.18.30</lombok.version>
+        <logback.version>1.4.14</logback.version>
     </properties>
 
     <dependencies>
@@ -55,6 +56,11 @@
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-junit5</artifactId>
             <version>${allure.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
         </dependency>
     </dependencies>
 

@@ -2,10 +2,13 @@ package pages;
 
 import com.microsoft.playwright.Page;
 import io.qameta.allure.Step;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class KarieryPage {
+    private static final Logger log = LoggerFactory.getLogger(KarieryPage.class);
     private final Page page;
 
     private static final String CITY_DROPDOWN = ".inp-custom-select__select-wrap";
@@ -18,6 +21,7 @@ public class KarieryPage {
 
     @Step("Filter positions by city \"{city}\"")
     public void filterByCity(String city) {
+        log.info("Filtering positions by city: {}", city);
         page.locator(CITY_DROPDOWN).click();
         page.locator(String.format(CITY_OPTION, city)).click();
         page.waitForTimeout(1000);
@@ -30,6 +34,8 @@ public class KarieryPage {
 
     @Step("Verify no positions are displayed")
     public boolean areResultsEmpty() {
-        return page.locator(POSITION_ITEMS + ":visible").count() == 0;
+        int count = page.locator(POSITION_ITEMS + ":visible").count();
+        log.info("Visible positions count after filter: {}", count);
+        return count == 0;
     }
 }

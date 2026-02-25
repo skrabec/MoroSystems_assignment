@@ -3,8 +3,11 @@ package pages;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import io.qameta.allure.Step;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MoroSystemsPage {
+    private static final Logger log = LoggerFactory.getLogger(MoroSystemsPage.class);
     private final Page page;
 
     private static final String URL = "https://www.morosystems.cz";
@@ -16,6 +19,7 @@ public class MoroSystemsPage {
 
     @Step("Open MoroSystems website")
     public void open() {
+        log.info("Navigating to {}", URL);
         page.navigate(URL);
         acceptCookiesIfPresent();
     }
@@ -31,7 +35,9 @@ public class MoroSystemsPage {
 
     @Step("Navigate to Kariéra page")
     public void goToKariera() {
+        log.info("Clicking Kariéra link");
         page.locator(KARIERA_LINK).first().click();
         page.waitForURL("**/kariera/**");
+        log.info("Navigated to: {}", page.url());
     }
 }

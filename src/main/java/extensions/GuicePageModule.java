@@ -18,13 +18,14 @@ public class GuicePageModule extends AbstractModule {
     private Page page;
     private BrowserContext context;
     public static final boolean TRACING_ENABLED = Boolean.parseBoolean(System.getProperty("tracing.enabled", "false"));
+    public static final boolean HEADLESS = Boolean.parseBoolean(System.getProperty("headless", "false"));
 
     public GuicePageModule() {
         Playwright playwright = Playwright.create();
         String browserName = System.getProperty("browser", "chromium");
         BrowserType.LaunchOptions options = new BrowserType.LaunchOptions()
-            .setHeadless(false)
-            .setSlowMo(500);
+            .setHeadless(HEADLESS)
+            .setSlowMo(HEADLESS ? 0 : 500);
 
         Browser browser;
         switch (browserName.toLowerCase()) {
