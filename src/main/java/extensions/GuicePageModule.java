@@ -10,7 +10,7 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.Tracing;
 import com.microsoft.playwright.options.ViewportSize;
-import pages.GooglePage;
+import pages.SeznamPage;
 import pages.KarieryPage;
 import pages.MoroSystemsPage;
 
@@ -45,12 +45,6 @@ public class GuicePageModule extends AbstractModule {
             .setLocale("cs-CZ")
             .setViewportSize(new ViewportSize(1920, 1080)));
 
-        if (TRACING_ENABLED) {
-            context.tracing().start(new Tracing.StartOptions()
-                .setScreenshots(true)
-                .setSnapshots(true));
-        }
-
         this.page = context.newPage();
         this.context = context;
     }
@@ -69,8 +63,8 @@ public class GuicePageModule extends AbstractModule {
 
     @Singleton
     @Provides
-    public GooglePage getGooglePage() {
-        return new GooglePage(page);
+    public SeznamPage getSeznamPage() {
+        return new SeznamPage(page);
     }
 
     @Singleton
