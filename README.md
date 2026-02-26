@@ -94,6 +94,28 @@ Can be combined with suite:
 mvn test -P all-browsers,suite
 ```
 
+### Parallel execution
+
+Tests are isolated (each test gets its own browser instance), so they can safely run in parallel. Disabled by default to avoid resource spikes.
+
+```bash
+mvn test -P parallel
+```
+
+Thread count defaults to `4`. Override with:
+
+```bash
+mvn test -P parallel -Dparallel.parallelism=8
+```
+
+Composes with other profiles:
+
+```bash
+mvn test -P parallel,firefox
+mvn test -P parallel,suite
+mvn test -P parallel,all-browsers
+```
+
 ### Headless mode
 
 ```bash

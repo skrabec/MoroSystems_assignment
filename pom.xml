@@ -22,6 +22,9 @@
         <logback.version>1.4.14</logback.version>
         <!-- Override with -P suite to run only AllTestsSuite -->
         <test.includes>**/*Test.java</test.includes>
+        <!-- Override with -P parallel or -Dparallel.parallelism=N -->
+        <parallel.enabled>false</parallel.enabled>
+        <parallel.parallelism>4</parallel.parallelism>
     </properties>
 
     <dependencies>
@@ -134,9 +137,24 @@
         </profile>
 
         <!-- ═══════════════════════════════════════════
+             Parallel execution within one browser
+             mvn test -P parallel
+             mvn test -P parallel,firefox
+             mvn test -P parallel,suite
+             mvn test -P parallel -Dparallel.parallelism=8
+             ═══════════════════════════════════════════ -->
+        <profile>
+            <id>parallel</id>
+            <properties>
+                <parallel.enabled>true</parallel.enabled>
+            </properties>
+        </profile>
+
+        <!-- ═══════════════════════════════════════════
              All browsers in sequence
              mvn test -P all-browsers
              mvn test -P all-browsers,suite
+             mvn test -P all-browsers,parallel
              ═══════════════════════════════════════════ -->
         <profile>
             <id>all-browsers</id>
@@ -162,6 +180,8 @@
                                     <systemPropertyVariables>
                                         <browser>chromium</browser>
                                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                                        <junit.jupiter.execution.parallel.enabled>${parallel.enabled}</junit.jupiter.execution.parallel.enabled>
+                                        <junit.jupiter.execution.parallel.config.fixed.parallelism>${parallel.parallelism}</junit.jupiter.execution.parallel.config.fixed.parallelism>
                                     </systemPropertyVariables>
                                     <properties>
                                         <property>
@@ -181,6 +201,8 @@
                                     <systemPropertyVariables>
                                         <browser>firefox</browser>
                                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                                        <junit.jupiter.execution.parallel.enabled>${parallel.enabled}</junit.jupiter.execution.parallel.enabled>
+                                        <junit.jupiter.execution.parallel.config.fixed.parallelism>${parallel.parallelism}</junit.jupiter.execution.parallel.config.fixed.parallelism>
                                     </systemPropertyVariables>
                                     <properties>
                                         <property>
@@ -200,6 +222,8 @@
                                     <systemPropertyVariables>
                                         <browser>edge</browser>
                                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                                        <junit.jupiter.execution.parallel.enabled>${parallel.enabled}</junit.jupiter.execution.parallel.enabled>
+                                        <junit.jupiter.execution.parallel.config.fixed.parallelism>${parallel.parallelism}</junit.jupiter.execution.parallel.config.fixed.parallelism>
                                     </systemPropertyVariables>
                                     <properties>
                                         <property>
@@ -227,6 +251,8 @@
                     <systemPropertyVariables>
                         <browser>${browser}</browser>
                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                        <junit.jupiter.execution.parallel.enabled>${parallel.enabled}</junit.jupiter.execution.parallel.enabled>
+                        <junit.jupiter.execution.parallel.config.fixed.parallelism>${parallel.parallelism}</junit.jupiter.execution.parallel.config.fixed.parallelism>
                     </systemPropertyVariables>
                     <properties>
                         <property>

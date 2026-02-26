@@ -19,12 +19,14 @@ import java.util.Date;
 
 public class UIExtensions implements BeforeEachCallback, AfterEachCallback {
     private static final Logger log = LoggerFactory.getLogger(UIExtensions.class);
-    Injector injector;
+    private static final ExtensionContext.Namespace NAMESPACE =
+        ExtensionContext.Namespace.create(UIExtensions.class);
 
     @Override
     public void beforeEach(ExtensionContext context) throws Exception {
         log.info("Starting test: {}", context.getDisplayName());
-        injector = Guice.createInjector(new GuicePageModule());
+        Injector injector = Guice.createInjector(new GuicePageModule());
+        context.getStore(NAMESPACE).put("injector", injector);
         injector.injectMembers(context.getTestInstance().get());
 
         injector.getProvider(BrowserContext.class).get()
@@ -35,10 +37,12 @@ public class UIExtensions implements BeforeEachCallback, AfterEachCallback {
 
     @Override
     public void afterEach(ExtensionContext context) {
+        Injector injector = context.getStore(NAMESPACE).get("injector", Injector.class);
+
         boolean passed = context.getExecutionException().isEmpty();
         log.info("Test {}: {}", context.getDisplayName(), passed ? "PASSED" : "FAILED");
 
-        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS").format(new Date());
         String testName = context.getDisplayName().replaceAll("[^a-zA-Z0-9]", "_");
         BrowserContext browserContext = injector.getProvider(BrowserContext.class).get();
 
