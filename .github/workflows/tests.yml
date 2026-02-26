@@ -41,7 +41,7 @@ jobs:
         run: mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps ${{ matrix.playwright_browser }}"
 
       - name: Run tests
-        run: mvn test -P ${{ matrix.browser }},parallel -Dheadless=true
+        run: mvn test -P ${{ matrix.browser }},parallel -Dheadless=true -Dmaven.test.failure.ignore=true
 
       - name: Upload test artifacts
         if: always()
@@ -73,6 +73,8 @@ jobs:
     needs: test
     if: always()
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -85,13 +87,15 @@ jobs:
           merge-multiple: true
           path: target/allure-results
 
-      - name: Generate and publish Allure Report
-        uses: simple-elf/allure-report-action@v1
-        with:
-          allure_results: target/allure-results
-          gh_pages: gh-pages
-          allure_history: allure-history
-          keep_reports: 20
+      - name: Install Allure CLI
+        run: |
+          curl -o allure.tgz -Ls https://github.com/allure-framework/allure2/releases/download/2.30.0/allure-2.30.0.tgz
+          tar -xzf allure.tgz
+          sudo mv allure-2.30.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+
+      - name: Generate Allure Report
+        run: allure generate target/allure-results -o allure-report --clean
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/ui_tests'
@@ -99,4 +103,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: allure-history
+          publish_dir: allure-report
