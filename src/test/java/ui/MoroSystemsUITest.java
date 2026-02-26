@@ -35,7 +35,7 @@ public class MoroSystemsUITest {
         seznamPage.search("MoroSystems.cz");
 
         moroSystemsPage.open();
-        moroSystemsPage.goToKariera();
+        moroSystemsPage.openKariera();
 
         karieryPage.filterByCity("Bratislava");
 
@@ -51,7 +51,7 @@ public class MoroSystemsUITest {
         seznamPage.search("MoroSystems.cz");
 
         moroSystemsPage.open();
-        moroSystemsPage.goToKariera();
+        moroSystemsPage.openKariera();
 
         karieryPage.filterByCity("Bratislava");
 

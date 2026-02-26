@@ -13,12 +13,15 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.11.0</junit.version>
+        <junit.platform.version>1.11.0</junit.platform.version>
         <guice.version>7.0.0</guice.version>
         <surefire.version>3.5.0</surefire.version>
         <compiler.version>3.8.1</compiler.version>
         <allure.version>2.33.0</allure.version>
         <lombok.version>1.18.30</lombok.version>
         <logback.version>1.4.14</logback.version>
+        <!-- Override with -P suite to run only AllTestsSuite -->
+        <test.includes>**/*Test.java</test.includes>
     </properties>
 
     <dependencies>
@@ -33,9 +36,19 @@
             <version>${junit.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>${junit.platform.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
-            <version>1.11.0</version>
+            <version>${junit.platform.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject</groupId>
@@ -65,6 +78,13 @@
     </dependencies>
 
     <profiles>
+
+        <!-- ═══════════════════════════════════════════
+             Browser selection  (pick one, default: chromium)
+             mvn test
+             mvn test -P firefox
+             mvn test -P edge
+             ═══════════════════════════════════════════ -->
         <profile>
             <id>chromium</id>
             <activation>
@@ -86,6 +106,115 @@
                 <browser>edge</browser>
             </properties>
         </profile>
+
+        <!-- ═══════════════════════════════════════════
+             Suite-only run
+             mvn test -P suite
+             mvn test -P suite,firefox
+             ═══════════════════════════════════════════ -->
+        <profile>
+            <id>suite</id>
+            <properties>
+                <test.includes>**/AllTestsSuite.java</test.includes>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${surefire.version}</version>
+                        <configuration>
+                            <includes>
+                                <include>${test.includes}</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- ═══════════════════════════════════════════
+             All browsers in sequence
+             mvn test -P all-browsers
+             mvn test -P all-browsers,suite
+             ═══════════════════════════════════════════ -->
+        <profile>
+            <id>all-browsers</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${surefire.version}</version>
+                        <executions>
+                            <!-- Disable the default single-browser execution -->
+                            <execution>
+                                <id>default-test</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>tests-chromium</id>
+                                <phase>test</phase>
+                                <goals><goal>test</goal></goals>
+                                <configuration>
+                                    <includes><include>${test.includes}</include></includes>
+                                    <reportsDirectory>${project.build.directory}/surefire-reports/chromium</reportsDirectory>
+                                    <systemPropertyVariables>
+                                        <browser>chromium</browser>
+                                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                                    </systemPropertyVariables>
+                                    <properties>
+                                        <property>
+                                            <name>listener</name>
+                                            <value>io.qameta.allure.junitplatform.AllureJunitPlatform</value>
+                                        </property>
+                                    </properties>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>tests-firefox</id>
+                                <phase>test</phase>
+                                <goals><goal>test</goal></goals>
+                                <configuration>
+                                    <includes><include>${test.includes}</include></includes>
+                                    <reportsDirectory>${project.build.directory}/surefire-reports/firefox</reportsDirectory>
+                                    <systemPropertyVariables>
+                                        <browser>firefox</browser>
+                                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                                    </systemPropertyVariables>
+                                    <properties>
+                                        <property>
+                                            <name>listener</name>
+                                            <value>io.qameta.allure.junitplatform.AllureJunitPlatform</value>
+                                        </property>
+                                    </properties>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>tests-edge</id>
+                                <phase>test</phase>
+                                <goals><goal>test</goal></goals>
+                                <configuration>
+                                    <includes><include>${test.includes}</include></includes>
+                                    <reportsDirectory>${project.build.directory}/surefire-reports/edge</reportsDirectory>
+                                    <systemPropertyVariables>
+                                        <browser>edge</browser>
+                                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                                    </systemPropertyVariables>
+                                    <properties>
+                                        <property>
+                                            <name>listener</name>
+                                            <value>io.qameta.allure.junitplatform.AllureJunitPlatform</value>
+                                        </property>
+                                    </properties>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 
     <build>

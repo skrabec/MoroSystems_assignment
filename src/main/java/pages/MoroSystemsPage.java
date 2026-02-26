@@ -11,7 +11,6 @@ public class MoroSystemsPage {
     private final Page page;
 
     private static final String URL = "https://www.morosystems.cz";
-    private static final String KARIERA_LINK = "a[href*='kariera']";
 
     public MoroSystemsPage(Page page) {
         this.page = page;
@@ -33,10 +32,10 @@ public class MoroSystemsPage {
         }
     }
 
-    @Step("Navigate to Kariéra page")
-    public void goToKariera() {
-        log.info("Clicking Kariéra link");
-        page.locator(KARIERA_LINK).first().click();
+    @Step("Open Kariéra page")
+    public void openKariera() {
+        log.info("Navigating directly to kariéra page");
+        page.navigate(URL + "/kariera/");
         page.waitForURL("**/kariera/**");
         log.info("Navigated to: {}", page.url());
     }
