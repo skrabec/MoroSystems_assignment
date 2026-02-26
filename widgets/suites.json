@@ -1,0 +1,1 @@
+{"total":2,"items":[{"uid":"410bbb2deee4cb37744234ccd8677f17","name":"ui.MoroSystemsUITest","statistic":{"failed":1,"broken":0,"skipped":0,"passed":1,"unknown":0,"total":2}},{"uid":"ec2b9cc04d33c6245b5bc301e87043e6","name":"ui.ResponsiveDesignTest","statistic":{"failed":0,"broken":0,"skipped":0,"passed":10,"unknown":0,"total":10}}]}
