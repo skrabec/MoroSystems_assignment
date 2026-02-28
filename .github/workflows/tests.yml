@@ -52,6 +52,7 @@ jobs:
             target/screenshots/
             target/traces/
             target/test-logs/
+            target/logs/
             target/surefire-reports/
           if-no-files-found: ignore
           retention-days: 7
