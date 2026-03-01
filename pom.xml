@@ -18,8 +18,9 @@
         <surefire.version>3.5.0</surefire.version>
         <compiler.version>3.8.1</compiler.version>
         <allure.version>2.33.0</allure.version>
-        <lombok.version>1.18.30</lombok.version>
         <logback.version>1.4.14</logback.version>
+        <restassured.version>5.4.0</restassured.version>
+        <jackson.version>2.17.0</jackson.version>
         <!-- Override with -P suite to run only AllTestsSuite -->
         <test.includes>**/*Test.java</test.includes>
         <!-- Override with -P parallel or -Dparallel.parallelism=N -->
@@ -58,10 +59,23 @@
             <artifactId>guice</artifactId>
             <version>${guice.version}</version>
         </dependency>
+        <!-- RestAssured -->
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${restassured.version}</version>
+        </dependency>
+
+        <!-- Jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-rest-assured</artifactId>
+            <version>${allure.version}</version>
         </dependency>
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
@@ -178,15 +192,24 @@
                             <execution>
                                 <id>tests-chromium</id>
                                 <phase>test</phase>
-                                <goals><goal>test</goal></goals>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
                                 <configuration>
-                                    <includes><include>${test.includes}</include></includes>
-                                    <reportsDirectory>${project.build.directory}/surefire-reports/chromium</reportsDirectory>
+                                    <includes>
+                                        <include>${test.includes}</include>
+                                    </includes>
+                                    <reportsDirectory>${project.build.directory}/surefire-reports/chromium
+                                    </reportsDirectory>
                                     <systemPropertyVariables>
                                         <browser>chromium</browser>
-                                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
-                                        <junit.jupiter.execution.parallel.enabled>${parallel.enabled}</junit.jupiter.execution.parallel.enabled>
-                                        <junit.jupiter.execution.parallel.config.fixed.parallelism>${parallel.parallelism}</junit.jupiter.execution.parallel.config.fixed.parallelism>
+                                        <allure.results.directory>${project.build.directory}/allure-results
+                                        </allure.results.directory>
+                                        <junit.jupiter.execution.parallel.enabled>${parallel.enabled}
+                                        </junit.jupiter.execution.parallel.enabled>
+                                        <junit.jupiter.execution.parallel.config.fixed.parallelism>
+                                            ${parallel.parallelism}
+                                        </junit.jupiter.execution.parallel.config.fixed.parallelism>
                                     </systemPropertyVariables>
                                     <properties>
                                         <property>
@@ -199,15 +222,24 @@
                             <execution>
                                 <id>tests-firefox</id>
                                 <phase>test</phase>
-                                <goals><goal>test</goal></goals>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
                                 <configuration>
-                                    <includes><include>${test.includes}</include></includes>
-                                    <reportsDirectory>${project.build.directory}/surefire-reports/firefox</reportsDirectory>
+                                    <includes>
+                                        <include>${test.includes}</include>
+                                    </includes>
+                                    <reportsDirectory>${project.build.directory}/surefire-reports/firefox
+                                    </reportsDirectory>
                                     <systemPropertyVariables>
                                         <browser>firefox</browser>
-                                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
-                                        <junit.jupiter.execution.parallel.enabled>${parallel.enabled}</junit.jupiter.execution.parallel.enabled>
-                                        <junit.jupiter.execution.parallel.config.fixed.parallelism>${parallel.parallelism}</junit.jupiter.execution.parallel.config.fixed.parallelism>
+                                        <allure.results.directory>${project.build.directory}/allure-results
+                                        </allure.results.directory>
+                                        <junit.jupiter.execution.parallel.enabled>${parallel.enabled}
+                                        </junit.jupiter.execution.parallel.enabled>
+                                        <junit.jupiter.execution.parallel.config.fixed.parallelism>
+                                            ${parallel.parallelism}
+                                        </junit.jupiter.execution.parallel.config.fixed.parallelism>
                                     </systemPropertyVariables>
                                     <properties>
                                         <property>
@@ -220,15 +252,24 @@
                             <execution>
                                 <id>tests-edge</id>
                                 <phase>test</phase>
-                                <goals><goal>test</goal></goals>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
                                 <configuration>
-                                    <includes><include>${test.includes}</include></includes>
-                                    <reportsDirectory>${project.build.directory}/surefire-reports/edge</reportsDirectory>
+                                    <includes>
+                                        <include>${test.includes}</include>
+                                    </includes>
+                                    <reportsDirectory>${project.build.directory}/surefire-reports/edge
+                                    </reportsDirectory>
                                     <systemPropertyVariables>
                                         <browser>edge</browser>
-                                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
-                                        <junit.jupiter.execution.parallel.enabled>${parallel.enabled}</junit.jupiter.execution.parallel.enabled>
-                                        <junit.jupiter.execution.parallel.config.fixed.parallelism>${parallel.parallelism}</junit.jupiter.execution.parallel.config.fixed.parallelism>
+                                        <allure.results.directory>${project.build.directory}/allure-results
+                                        </allure.results.directory>
+                                        <junit.jupiter.execution.parallel.enabled>${parallel.enabled}
+                                        </junit.jupiter.execution.parallel.enabled>
+                                        <junit.jupiter.execution.parallel.config.fixed.parallelism>
+                                            ${parallel.parallelism}
+                                        </junit.jupiter.execution.parallel.config.fixed.parallelism>
                                     </systemPropertyVariables>
                                     <properties>
                                         <property>
@@ -256,8 +297,10 @@
                     <systemPropertyVariables>
                         <browser>${browser}</browser>
                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
-                        <junit.jupiter.execution.parallel.enabled>${parallel.enabled}</junit.jupiter.execution.parallel.enabled>
-                        <junit.jupiter.execution.parallel.config.fixed.parallelism>${parallel.parallelism}</junit.jupiter.execution.parallel.config.fixed.parallelism>
+                        <junit.jupiter.execution.parallel.enabled>${parallel.enabled}
+                        </junit.jupiter.execution.parallel.enabled>
+                        <junit.jupiter.execution.parallel.config.fixed.parallelism>${parallel.parallelism}
+                        </junit.jupiter.execution.parallel.config.fixed.parallelism>
                     </systemPropertyVariables>
                     <properties>
                         <property>
