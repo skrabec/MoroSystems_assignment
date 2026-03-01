@@ -19,6 +19,8 @@
 
     <logger name="pages" level="INFO"/>
     <logger name="extensions" level="INFO"/>
+    <logger name="api" level="INFO"/>
+    <logger name="io.restassured" level="WARN"/>
     <logger name="com.microsoft.playwright" level="WARN"/>
 
     <root level="INFO">
