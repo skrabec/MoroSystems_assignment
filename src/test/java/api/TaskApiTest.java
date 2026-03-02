@@ -5,12 +5,14 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Step;
 import io.qameta.allure.Story;
-import model.api.CreateTaskRequest;
+import model.api.CreateTask;
 import model.api.Task;
-import model.api.UpdateTaskRequest;
+import model.api.UpdateTask;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(ApiExtension.class)
 @Feature("Todo Task API")
 public class TaskApiTest {
@@ -48,7 +51,7 @@ public class TaskApiTest {
     @DisplayName("POST /tasks creates task with correct data")
     void createTaskReturnsCorrectData() {
         String text = "API test task - " + System.currentTimeMillis();
-        Task created = api.createTask(new CreateTaskRequest(text));
+        Task created = api.createTask(new CreateTask().text(text));
 
         try {
             assertAll(
@@ -69,11 +72,11 @@ public class TaskApiTest {
     @Description("Update text of an existing task and verify the change is reflected in the response")
     @DisplayName("POST /tasks/{id} updates task text")
     void updateTaskTextReturnsUpdatedData() {
-        Task created = api.createTask(new CreateTaskRequest("Original - " + System.currentTimeMillis()));
+        Task created = api.createTask(new CreateTask().text("Original " + System.currentTimeMillis()));
 
         try {
             String updatedText = "Updated - " + System.currentTimeMillis();
-            Task updated = api.updateTask(created.getId(), new UpdateTaskRequest(updatedText));
+            Task updated = api.updateTask(created.getId(), new UpdateTask().text(updatedText));
 
             assertAll(
                 () -> assertEquals(created.getId(), updated.getId(), "id should not change after update"),
@@ -90,7 +93,7 @@ public class TaskApiTest {
     @Description("Delete an existing task and verify it no longer appears in the task list")
     @DisplayName("DELETE /tasks/{id} removes task from list")
     void deleteTaskRemovesItFromList() {
-        Task created = api.createTask(new CreateTaskRequest("To be deleted - " + System.currentTimeMillis()));
+        Task created = api.createTask(new CreateTask().text("To be deleted " + System.currentTimeMillis()));
 
         api.deleteTask(created.getId());
 
@@ -110,7 +113,7 @@ public class TaskApiTest {
     @Description("Mark a task as complete and verify completed=true and completedDate is populated")
     @DisplayName("POST /tasks/{id}/complete sets completed flag and date")
     void completeTaskSetsCompletedFlagAndDate() {
-        Task created = api.createTask(new CreateTaskRequest("To complete - " + System.currentTimeMillis()));
+        Task created = api.createTask(new CreateTask().text("To complete " + System.currentTimeMillis()));
 
         try {
             Task completed = api.completeTask(created.getId());
@@ -130,7 +133,7 @@ public class TaskApiTest {
     @Description("Re-open a completed task and verify completed=false and completedDate is cleared")
     @DisplayName("POST /tasks/{id}/incomplete clears completed flag")
     void incompleteTaskClearsCompletedFlag() {
-        Task created = api.createTask(new CreateTaskRequest("To incomplete - " + System.currentTimeMillis()));
+        Task created = api.createTask(new CreateTask().text("To incomplete - " + System.currentTimeMillis()));
 
         try {
             api.completeTask(created.getId());
@@ -150,7 +153,7 @@ public class TaskApiTest {
     @Description("Retrieve completed tasks and verify every task in the list has completed=true")
     @DisplayName("GET /tasks/completed returns only completed tasks")
     void getCompletedTasksReturnsOnlyCompleted() {
-        Task created = api.createTask(new CreateTaskRequest("Completed task - " + System.currentTimeMillis()));
+        Task created = api.createTask(new CreateTask().text("Completed task - " + System.currentTimeMillis()));
         api.completeTask(created.getId());
 
         try {
@@ -165,17 +168,17 @@ public class TaskApiTest {
     }
 
     @Test
-    @Story("Create task - validation")
-    @Description("Attempt to create a task with empty text — API should return 422")
+    @Story("Create task: validation")
+    @Description("Attempt to create a task with empty text: API should return 422")
     @DisplayName("POST /tasks with empty text returns 422")
     void createTaskWithEmptyTextReturns422() {
-        int status = api.createTaskRaw(new CreateTaskRequest(""))
+        int status = api.createTaskRaw(new CreateTask().text(""))
             .then().extract().statusCode();
         assertEquals(422, status, "Empty text should be rejected with 422");
     }
 
     @Test
-    @Story("Delete task - validation")
+    @Story("Delete task: validation")
     @Description("Attempt to delete a task with a non-existent ID — API should return 404")
     @DisplayName("DELETE /tasks/{id} with unknown id returns 404")
     void deleteNonExistentTaskReturns400() {

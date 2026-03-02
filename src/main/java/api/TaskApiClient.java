@@ -6,9 +6,9 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import model.api.CreateTaskRequest;
+import model.api.CreateTask;
 import model.api.Task;
-import model.api.UpdateTaskRequest;
+import model.api.UpdateTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class TaskApiClient {
     }
 
     @Step("POST /tasks")
-    public Task createTask(CreateTaskRequest request) {
+    public Task createTask(CreateTask request) {
         log.info("POST /tasks - text: '{}'", request.getText());
         Task task = given().spec(spec)
             .body(request)
@@ -60,7 +60,7 @@ public class TaskApiClient {
     }
 
     @Step("POST /tasks/{id} - update")
-    public Task updateTask(String id, UpdateTaskRequest request) {
+    public Task updateTask(String id, UpdateTask request) {
         log.info("POST /tasks/{} - text: '{}'", id, request.getText());
         Task task = given().spec(spec)
             .pathParam("id", id)
@@ -127,7 +127,7 @@ public class TaskApiClient {
         return task;
     }
 
-    public Response createTaskRaw(CreateTaskRequest request) {
+    public Response createTaskRaw(CreateTask request) {
         log.info("POST /tasks (raw) - text: '{}'", request.getText());
         return given().spec(spec)
             .body(request)
