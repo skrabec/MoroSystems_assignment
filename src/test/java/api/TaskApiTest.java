@@ -121,7 +121,7 @@ public class TaskApiTest {
             assertAll(
                 () -> assertTrue(completed.isCompleted(), "completed should be true after /complete"),
                 () -> assertNotNull(completed.getCompletedDate(), "completedDate should be set after /complete"),
-                () -> assertTrue(completed.getCompletedDate() > 0, "completedDate should be a positive timestamp")
+                () -> assertTrue(completed.getCompletedDate() != null && completed.getCompletedDate() > 0, "completedDate should be a positive timestamp")
             );
         } finally {
             cleanUp(created.getId());
