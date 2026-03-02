@@ -158,7 +158,7 @@ mvn test -Dtracing.enabled=true
 
 ### TaskApiTest
 
-Tests the [Todo API](https://todo-be-production-0bb9.up.railway.app/api-docs/). Runs in parallel (`@Execution(CONCURRENT)`).
+Tests the Todo API deployed at `https://todo-be-production-0bb9.up.railway.app` ([Swagger UI](https://todo-be-production-0bb9.up.railway.app/api-docs/)). Runs in parallel (`@Execution(CONCURRENT)`).
 
 | Test | Description |
 |------|-------------|
