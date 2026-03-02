@@ -61,7 +61,7 @@ public class VisualRegressionTest {
 
     @Step("Compare screenshot with baseline \"{name}\"")
     private void compareWithBaseline(String name, Page page) throws Exception {
-        page.waitForLoadState(com.microsoft.playwright.options.LoadState.NETWORKIDLE);
+        page.waitForLoadState(com.microsoft.playwright.options.LoadState.LOAD);
         BufferedImage actual = VisualBaseline.fromBytes(page.screenshot());
 
         BufferedImage baseline = VisualBaseline.load(name);
