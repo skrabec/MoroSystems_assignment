@@ -51,8 +51,8 @@ public class VisualRegressionTest {
 
     @ParameterizedTest(name = "{0}")
     @EnumSource(ScreenResolution.class)
-    @Story("Kariéra page visual regression")
-    @Description("Compare MoroSystems Kariéra page screenshot against baseline for each resolution")
+    @Story("Kariera page visual regression")
+    @Description("Compare MoroSystems Kariera page screenshot against baseline for each resolution")
     void karieraMatchesBaseline(ScreenResolution resolution) throws Exception {
         page.setViewportSize(resolution.width, resolution.height);
         moroSystemsPage.openKariera();
