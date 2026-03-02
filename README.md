@@ -1,6 +1,6 @@
 # MoroSystems Automation Assignment
 
-UI test automation for [morosystems.cz](https://www.morosystems.cz) built with Java, Playwright, JUnit 5, and Guice.
+UI and API test automation for [morosystems.cz](https://www.morosystems.cz) built with Java, Playwright, REST Assured, JUnit 5, and Guice.
 
 ## Tech Stack
 
@@ -8,6 +8,8 @@ UI test automation for [morosystems.cz](https://www.morosystems.cz) built with J
 |------|---------|---------|
 | Java | 11+ | Language |
 | Playwright | 1.49.0 | Browser automation |
+| REST Assured | 5.4.0 | API test HTTP client |
+| OpenAPI Generator | 7.2.0 | API model codegen from Swagger spec |
 | JUnit 5 | 5.11.0 | Test framework |
 | Google Guice | 7.0.0 | Dependency injection |
 | Allure | 2.33.0 | Reporting |
@@ -18,22 +20,32 @@ UI test automation for [morosystems.cz](https://www.morosystems.cz) built with J
 ```
 src/
 ├── main/java/
+│   ├── api/
+│   │   └── TaskApiClient.java            # REST Assured client for Todo API
 │   ├── extensions/
 │   │   ├── GuicePageModule.java          # Guice DI module — browser setup, page object bindings
 │   │   └── junit/
-│   │       └── UIExtensions.java         # JUnit 5 extension — screenshots/traces/logs on failure
+│   │       ├── UIExtensions.java         # JUnit 5 extension — screenshots/traces/logs on failure
+│   │       └── ApiExtension.java         # JUnit 5 extension for API tests
 │   ├── model/
 │   │   └── ScreenResolution.java         # Enum of tested viewport sizes
 │   └── pages/
 │       ├── SeznamPage.java               # Seznam.cz search page
 │       ├── MoroSystemsPage.java          # MoroSystems homepage
-│       └── KarieryPage.java              # Kariéra page with city filter
+│       └── KarieryPage.java              # Kariera page with city filter
+├── main/resources/
+│   └── openapi/
+│       └── openapi.json                  # OpenAPI spec — source for model codegen
 └── test/java/
+    ├── api/
+    │   └── TaskApiTest.java              # REST API tests for Todo backend
     └── ui/
         ├── AllTestsSuite.java            # JUnit 5 suite — runs all test classes
-        ├── MoroSystemsUITest.java        # Kariéra filter scenarios
+        ├── MoroSystemsUITest.java        # Kariera filter scenarios
         └── ResponsiveDesignTest.java     # Responsive design checks across resolutions
 ```
+
+Generated API models (`Task`, `CreateTask`, `UpdateTask`) are produced automatically at build time from `openapi.json` into `target/generated-sources/openapi/`.
 
 ## Prerequisites
 
@@ -53,6 +65,18 @@ mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="in
 mvn test
 ```
 
+### API tests only
+
+```bash
+mvn test -Dtest=TaskApiTest
+```
+
+### API tests in parallel
+
+```bash
+mvn test -Dtest=TaskApiTest -P parallel
+```
+
 ### Specific browser
 
 ```bash
@@ -62,7 +86,7 @@ mvn test -P edge
 
 ### Suite only
 
-Runs all tests through `AllTestsSuite` instead of discovering classes individually:
+Runs all tests (UI + API) through `AllTestsSuite` instead of discovering classes individually:
 
 ```bash
 mvn test -P suite
@@ -132,6 +156,22 @@ mvn test -Dtracing.enabled=true
 
 ## Test Scenarios
 
+### TaskApiTest
+
+Tests the Todo API deployed at `https://todo-be-production-0bb9.up.railway.app` ([Swagger UI](https://todo-be-production-0bb9.up.railway.app/api-docs/)). Runs in parallel (`@Execution(CONCURRENT)`).
+
+| Test | Description |
+|------|-------------|
+| `getAllTasksReturnsList` | GET /tasks returns 200 with non-null list |
+| `createTaskReturnsCorrectData` | POST /tasks returns task with correct id, text, defaults |
+| `updateTaskTextReturnsUpdatedData` | POST /tasks/{id} updates text |
+| `deleteTaskRemovesItFromList` | DELETE /tasks/{id} removes task from GET response |
+| `completeTaskSetsCompletedFlagAndDate` | POST /tasks/{id}/complete sets completed=true and completedDate |
+| `incompleteTaskClearsCompletedFlag` | POST /tasks/{id}/incomplete clears completed flag |
+| `getCompletedTasksReturnsOnlyCompleted` | GET /tasks/completed returns only completed tasks |
+| `createTaskWithEmptyTextReturns422` | POST /tasks with empty text returns 422 |
+| `deleteNonExistentTaskReturns400` | DELETE /tasks/{id} with unknown id returns 404 |
+
 ### MoroSystemsUITest
 
 | Test | Expected result |
@@ -154,7 +194,7 @@ Parameterized across 5 viewport sizes:
 Each resolution runs two checks:
 
 - **Homepage** — `header` visible, `h1` visible, no horizontal overflow
-- **Kariéra page** — `h1` visible, city filter visible, no horizontal overflow
+- **Kariera page** — `h1` visible, city filter visible, no horizontal overflow
 
 ## Artifacts on Failure
 
@@ -173,6 +213,28 @@ Traces can be inspected with:
 ```bash
 mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="show-trace target/traces/<file>.zip"
 ```
+
+## Troubleshooting
+
+### Visual regression tests fail with large pixel diffs
+
+Baselines are stored in `src/test/resources/baselines/`. If the site has changed and diffs are expected, delete the outdated baseline files and re-run. The test will save a new baseline on first run, then compare on subsequent runs:
+
+```bash
+# Delete all baselines and regenerate
+rm src/test/resources/baselines/*.png
+mvn test -Dtest=VisualRegressionTest
+```
+
+Or delete a specific baseline:
+
+```bash
+rm src/test/resources/baselines/homepage_DESKTOP.png
+```
+
+### Visual regression tests fail with TimeoutError (NETWORKIDLE)
+
+If `waitForLoadState(NETWORKIDLE)` times out, it means the site has continuous background network activity (analytics, ads) and the idle state is never reached. The test uses `LOAD` instead, which waits only for the DOM and page resources.
 
 ## Allure Report
 

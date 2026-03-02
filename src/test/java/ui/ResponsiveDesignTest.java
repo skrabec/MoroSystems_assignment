@@ -49,8 +49,8 @@ public class ResponsiveDesignTest {
 
     @ParameterizedTest(name = "{0}")
     @EnumSource(ScreenResolution.class)
-    @Story("Kariéra page responsive design")
-    @Description("Validate MoroSystems Kariéra page displays correctly on different screen resolutions")
+    @Story("Kariera page responsive design")
+    @Description("Validate MoroSystems Kariera page displays correctly on different screen resolutions")
     void karieraPageDisplaysCorrectly(ScreenResolution resolution) {
         page.setViewportSize(resolution.width, resolution.height);
         moroSystemsPage.openKariera();

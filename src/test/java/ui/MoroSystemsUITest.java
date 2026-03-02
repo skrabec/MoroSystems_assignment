@@ -28,8 +28,8 @@ public class MoroSystemsUITest {
     private SeznamPage seznamPage;
 
     @Test
-    @Story("Filter kariéra positions by city")
-    @Description("Navigate to MoroSystems website, go to Kariéra page and filter positions by city")
+    @Story("Filter kariera positions by city")
+    @Description("Navigate to MoroSystems website, go to Kariera page and filter positions by city")
     void filterKarieraPositionsByCity() {
         seznamPage.open();
         seznamPage.search("MoroSystems.cz");
@@ -44,8 +44,8 @@ public class MoroSystemsUITest {
     }
 
     @Test
-    @Story("Filter kariéra positions by city")
-    @Description("Navigate to MoroSystems website, go to Kariéra page and expect positions in Bratislava - should fail as no positions exist")
+    @Story("Filter kariera positions by city")
+    @Description("Navigate to MoroSystems website, go to Kariera page and expect positions in Bratislava - should fail as no positions exist")
     void expectPositionsInBratislava() {
         seznamPage.open();
         seznamPage.search("MoroSystems.cz");

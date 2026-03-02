@@ -32,9 +32,9 @@ public class MoroSystemsPage {
         }
     }
 
-    @Step("Open Kariéra page")
+    @Step("Open Kariera page")
     public void openKariera() {
-        log.info("Navigating directly to kariéra page");
+        log.info("Navigating directly to kariera page");
         page.navigate(URL + "/kariera/");
         page.waitForURL("**/kariera/**");
         log.info("Navigated to: {}", page.url());

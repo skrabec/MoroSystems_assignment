@@ -51,8 +51,8 @@ public class VisualRegressionTest {
 
     @ParameterizedTest(name = "{0}")
     @EnumSource(ScreenResolution.class)
-    @Story("Kariéra page visual regression")
-    @Description("Compare MoroSystems Kariéra page screenshot against baseline for each resolution")
+    @Story("Kariera page visual regression")
+    @Description("Compare MoroSystems Kariera page screenshot against baseline for each resolution")
     void karieraMatchesBaseline(ScreenResolution resolution) throws Exception {
         page.setViewportSize(resolution.width, resolution.height);
         moroSystemsPage.openKariera();
@@ -61,7 +61,7 @@ public class VisualRegressionTest {
 
     @Step("Compare screenshot with baseline \"{name}\"")
     private void compareWithBaseline(String name, Page page) throws Exception {
-        page.waitForLoadState(com.microsoft.playwright.options.LoadState.NETWORKIDLE);
+        page.waitForLoadState(com.microsoft.playwright.options.LoadState.LOAD);
         BufferedImage actual = VisualBaseline.fromBytes(page.screenshot());
 
         BufferedImage baseline = VisualBaseline.load(name);
